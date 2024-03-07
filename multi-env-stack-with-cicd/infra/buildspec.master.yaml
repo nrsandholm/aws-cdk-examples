@@ -1,0 +1,21 @@
+# https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
+version: 0.2
+        
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      nodejs: 18.x
+  build:
+    on-failure: ABORT
+    commands:
+      - cd multi-env-stack-with-cicd/infra
+      - COMMIT_ID=$(git rev-parse HEAD)
+      - npm install
+      - npm run test
+      - npm run cdk synth
+artifacts:
+  files:
+    - '**/*'
+  name: commit-$COMMIT_ID
+  base-directory: multi-env-stack-with-cicd/infra/cdk.out
