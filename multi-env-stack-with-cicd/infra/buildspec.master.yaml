@@ -1,6 +1,10 @@
 # https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
 version: 0.2
-        
+
+env:
+  variables:
+    PROJECT_NAME: multi-env-stack-with-cicd
+
 phases:
   install:
     on-failure: ABORT
@@ -9,7 +13,12 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      - cd multi-env-stack-with-cicd/infra
+      - PROJECT_ROOT_DIR="$(pwd)/$PROJECT_NAME"
+      - cd $PROJECT_ROOT_DIR/infra
+      - npm install
+      - npm run test
+      - npm run cdk synth
+      - cd $PROJECT_ROOT_DIR/lambda-app/infra
       - COMMIT_ID=$(git rev-parse HEAD)
       - npm install
       - npm run test
